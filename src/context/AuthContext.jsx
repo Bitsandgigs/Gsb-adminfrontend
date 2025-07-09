@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Set axios defaults - proxy will handle /api requests to backend
-  const API_BASE = "/api";
+  const API_BASE = "http://13.235.77.158:3000/api";
 
   useEffect(() => {
     // Check if user is already logged in
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post(`${API_BASE}/auth/admin/login`, {
+      const response = await axios.post(`${API_BASE}/auth/login`, {
         email,
         password,
       });
