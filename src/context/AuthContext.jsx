@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Set axios defaults - proxy will handle /api requests to backend
-  const API_BASE = "http://13.235.77.158:3000/api";
+  const API_BASE = "https://apis.gsbpathy.com/api";
 
   useEffect(() => {
     // Check if user is already logged in

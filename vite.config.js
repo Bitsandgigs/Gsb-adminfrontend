@@ -24,7 +24,7 @@ export default defineConfig({
     proxy: {
       // Proxy API requests to the backend during development
       "/api": {
-        target: "http://13.235.77.158:3000",
+        target: "https://apis.gsbpathy.com/api",
         changeOrigin: true,
         secure: false, // Set to false to bypass self-signed certificate issues in dev
         ws: true, // Enable WebSocket proxying if needed
