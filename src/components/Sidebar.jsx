@@ -46,8 +46,11 @@ const Sidebar = () => {
     <nav className="sidebar">
       <div className="sidebar-header">
         <div className="logo">
-          <h2>GSB</h2>
-          <span>Admin Panel</span>
+          <img
+            src="/logo.png"
+            alt="GSB Pathy Logo"
+            style={{ width: "150px", height: "100px" }}
+          />
         </div>
       </div>
 

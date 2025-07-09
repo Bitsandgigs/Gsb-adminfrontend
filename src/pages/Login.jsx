@@ -26,8 +26,11 @@ const Login = () => {
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="login-header">
-          <h1>GSB</h1>
-          <p>Admin Panel</p>
+          <img
+            src="/logo.png"
+            alt="GSB Pathy Logo"
+            style={{ width: "200px", height: "150px" }}
+          />
         </div>
 
         <div className="form-group">
