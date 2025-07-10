@@ -31,7 +31,7 @@ const Videos = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
-  const accessLevels = ["Free", "Paid"];
+  const accessLevels = ["All Users", "Freemium", "Premium"];
   const [categoryForm, setCategoryForm] = useState({
     name: "",
     description: "",
@@ -41,7 +41,7 @@ const Videos = () => {
     title: "",
     description: "",
     categoryId: "",
-    accessLevel: "Free",
+    accessLevel: "All Users",
     youtubeLink: "",
     videoFile: null,
     thumbnailFile: null,
@@ -59,13 +59,13 @@ const Videos = () => {
       filtered = filtered.filter(
         (video) =>
           video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          video.description?.toLowerCase().includes(searchTerm.toLowerCase()),
+          video.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (categoryFilter) {
       filtered = filtered.filter(
-        (video) => video.category?.categoryId === categoryFilter,
+        (video) => video.category?.categoryId === categoryFilter
       );
     }
 
@@ -114,7 +114,7 @@ const Videos = () => {
       console.error("Error loading videos:", error);
       alert(
         error.response?.data?.message ||
-          "Failed to load videos. Please try again.",
+          "Failed to load videos. Please try again."
       );
     } finally {
       setLoading(false);
@@ -131,7 +131,7 @@ const Videos = () => {
       console.error("Error loading categories:", error);
       alert(
         error.response?.data?.message ||
-          "Failed to load categories. Please try again.",
+          "Failed to load categories. Please try again."
       );
     }
   };
@@ -158,11 +158,6 @@ const Videos = () => {
         formDataToSend.append("thumbnail", formData.thumbnailFile);
       }
 
-      // Log FormData for debugging
-      for (let pair of formDataToSend.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
-      }
-
       setIsUploading(true);
       setUploadProgress(0);
 
@@ -173,7 +168,7 @@ const Videos = () => {
         },
         onUploadProgress: (progressEvent) => {
           const progress = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total,
+            (progressEvent.loaded * 100) / progressEvent.total
           );
           setUploadProgress(progress);
         },
@@ -183,7 +178,7 @@ const Videos = () => {
         await axios.put(
           `${API_BASE}/videos/${editingVideo._id}`,
           formDataToSend,
-          config,
+          config
         );
       } else {
         await axios.post(`${API_BASE}/videos`, formDataToSend, config);
@@ -195,7 +190,7 @@ const Videos = () => {
         title: "",
         description: "",
         categoryId: "",
-        accessLevel: "Free",
+        accessLevel: "All Users",
         youtubeLink: "",
         videoFile: null,
         thumbnailFile: null,
@@ -204,8 +199,7 @@ const Videos = () => {
     } catch (error) {
       console.error("Error saving video:", error);
       alert(
-        error.response?.data?.message ||
-          "Error saving video. Please try again.",
+        error.response?.data?.message || "Error saving video. Please try again."
       );
     } finally {
       setIsUploading(false);
@@ -238,7 +232,7 @@ const Videos = () => {
         console.error("Error deleting video:", error);
         alert(
           error.response?.data?.message ||
-            "Error deleting video. Please try again.",
+            "Error deleting video. Please try again."
         );
       }
     }
@@ -256,7 +250,7 @@ const Videos = () => {
         await axios.put(
           `${API_BASE}/video-categories/update/${editingCategory.categoryId}`,
           payload,
-          { headers: { Authorization: `Bearer ${token}` } },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(`${API_BASE}/video-categories/add`, payload, {
@@ -272,7 +266,7 @@ const Videos = () => {
       console.error("Error saving category:", error);
       alert(
         error.response?.data?.message ||
-          "Error saving category. Please try again.",
+          "Error saving category. Please try again."
       );
     }
   };
@@ -284,14 +278,14 @@ const Videos = () => {
           `${API_BASE}/video-categories/delete/${categoryId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          },
+          }
         );
         loadCategories();
       } catch (error) {
         console.error("Error deleting category:", error);
         alert(
           error.response?.data?.message ||
-            "Error deleting category. Please try again.",
+            "Error deleting category. Please try again."
         );
       }
     }
@@ -314,7 +308,7 @@ const Videos = () => {
   const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
   const currentVideos = filteredVideos.slice(
     indexOfFirstVideo,
-    indexOfLastVideo,
+    indexOfLastVideo
   );
   const totalPages = Math.ceil(filteredVideos.length / videosPerPage);
 
@@ -335,7 +329,7 @@ const Videos = () => {
                 title: "",
                 description: "",
                 categoryId: "",
-                accessLevel: "Free",
+                accessLevel: "All Users",
                 youtubeLink: "",
                 videoFile: null,
                 thumbnailFile: null,
@@ -367,7 +361,12 @@ const Videos = () => {
       {/* Search and Filters */}
       <div
         className="filter-controls"
-        style={{ marginBottom: "20px", flexWrap: "wrap" }}
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "10px",
+        }}
       >
         <div
           className="search-box"
@@ -481,7 +480,11 @@ const Videos = () => {
               <div style={{ position: "absolute", top: "10px", right: "10px" }}>
                 <span
                   className={`flag-badge flag-${
-                    video.accessLevel === "Free" ? "green" : "yellow"
+                    video.accessLevel === "All Users"
+                      ? "green"
+                      : video.accessLevel === "Freemium"
+                      ? "yellow"
+                      : "red"
                   }`}
                 >
                   {video.accessLevel}
@@ -634,186 +637,218 @@ const Videos = () => {
               padding: "30px",
               borderRadius: "12px",
               width: "90%",
-              maxWidth: "500px",
+              maxWidth: "800px", // Increased width for better display
               border: "1px solid var(--border-color)",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
           >
-            <h2 style={{ color: "var(--primary-gold)", marginBottom: "20px" }}>
-              {editingVideo ? "Edit Video" : "Add New Video"}
-            </h2>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <h2 style={{ color: "var(--primary-gold)", margin: 0 }}>
+                {editingVideo ? "Edit Video" : "Add New Video"}
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--text-white)",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                }}
+              >
+                ×
+              </button>
+            </div>
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Title *</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "var(--input-bg)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "8px",
-                    color: "var(--text-white)",
-                  }}
-                />
-              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "20px",
+                }}
+              >
+                <div className="form-group">
+                  <label>Title *</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "var(--input-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      color: "var(--text-white)",
+                    }}
+                  />
+                </div>
 
-              <div className="form-group">
-                <label>Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  rows={3}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "var(--input-bg)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "8px",
-                    color: "var(--text-white)",
-                    resize: "vertical",
-                  }}
-                />
-              </div>
+                <div className="form-group">
+                  <label>Category *</label>
+                  <select
+                    value={formData.categoryId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, categoryId: e.target.value })
+                    }
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "var(--input-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      color: "var(--text-white)",
+                    }}
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option
+                        key={category.categoryId}
+                        value={category.categoryId}
+                      >
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="form-group">
-                <label>Category *</label>
-                <select
-                  value={formData.categoryId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, categoryId: e.target.value })
-                  }
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "var(--input-bg)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "8px",
-                    color: "var(--text-white)",
-                  }}
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((category) => (
-                    <option
-                      key={category.categoryId}
-                      value={category.categoryId}
-                    >
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    rows={3}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "var(--input-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      color: "var(--text-white)",
+                      resize: "vertical",
+                    }}
+                  />
+                </div>
 
-              <div className="form-group">
-                <label>Access Level</label>
-                <select
-                  value={formData.accessLevel}
-                  onChange={(e) =>
-                    setFormData({ ...formData, accessLevel: e.target.value })
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "var(--input-bg)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "8px",
-                    color: "var(--text-white)",
-                  }}
-                >
-                  {accessLevels.map((level) => (
-                    <option key={level} value={level}>
-                      {level}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                <div className="form-group">
+                  <label>Access Level</label>
+                  <select
+                    value={formData.accessLevel}
+                    onChange={(e) =>
+                      setFormData({ ...formData, accessLevel: e.target.value })
+                    }
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "var(--input-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      color: "var(--text-white)",
+                    }}
+                  >
+                    {accessLevels.map((level) => (
+                      <option key={level} value={level}>
+                        {level}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="form-group">
-                <label>YouTube Link</label>
-                <input
-                  type="url"
-                  value={formData.youtubeLink}
-                  onChange={(e) =>
-                    setFormData({ ...formData, youtubeLink: e.target.value })
-                  }
-                  placeholder="https://youtube.com/watch?v=..."
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "var(--input-bg)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "8px",
-                    color: "var(--text-white)",
-                  }}
-                />
-                <small
-                  style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
-                >
-                  Optional - Provide a YouTube link or upload a video file below
-                </small>
-              </div>
+                <div className="form-group">
+                  <label>YouTube Link</label>
+                  <input
+                    type="url"
+                    value={formData.youtubeLink}
+                    onChange={(e) =>
+                      setFormData({ ...formData, youtubeLink: e.target.value })
+                    }
+                    placeholder="https://youtube.com/watch?v=..."
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "var(--input-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      color: "var(--text-white)",
+                    }}
+                  />
+                  <small
+                    style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
+                  >
+                    Optional - Provide a YouTube link or upload a video file
+                    below
+                  </small>
+                </div>
 
-              <div className="form-group">
-                <label>Video File</label>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) =>
-                    setFormData({ ...formData, videoFile: e.target.files[0] })
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "var(--input-bg)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "8px",
-                    color: "var(--text-white)",
-                  }}
-                />
-                <small
-                  style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
-                >
-                  Optional - Upload video file (max 100MB, mp4, webm)
-                </small>
-              </div>
+                <div className="form-group">
+                  <label>Video File</label>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) =>
+                      setFormData({ ...formData, videoFile: e.target.files[0] })
+                    }
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "var(--input-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      color: "var(--text-white)",
+                    }}
+                  />
+                  <small
+                    style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
+                  >
+                    Optional - Upload video file (max 100MB, mp4, webm)
+                  </small>
+                </div>
 
-              <div className="form-group">
-                <label>Thumbnail Image</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      thumbnailFile: e.target.files[0],
-                    })
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    background: "var(--input-bg)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "8px",
-                    color: "var(--text-white)",
-                  }}
-                />
-                <small
-                  style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
-                >
-                  Optional - Upload a thumbnail image (jpg, png, max 5MB)
-                </small>
+                <div className="form-group">
+                  <label>Thumbnail Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        thumbnailFile: e.target.files[0],
+                      })
+                    }
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "var(--input-bg)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "8px",
+                      color: "var(--text-white)",
+                    }}
+                  />
+                  <small
+                    style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
+                  >
+                    Optional - Upload a thumbnail image (jpg, png, max 5MB)
+                  </small>
+                </div>
               </div>
 
               {isUploading && (
-                <div style={{ marginBottom: "20px" }}>
+                <div style={{ margin: "20px 0" }}>
                   <div
                     style={{ marginBottom: "8px", color: "var(--text-gray)" }}
                   >
@@ -839,6 +874,7 @@ const Videos = () => {
                   </div>
                 </div>
               )}
+
               <div
                 style={{
                   display: "flex",
@@ -863,8 +899,8 @@ const Videos = () => {
                   {isUploading
                     ? "Uploading..."
                     : editingVideo
-                      ? "Update"
-                      : "Create"}{" "}
+                    ? "Update"
+                    : "Create"}{" "}
                   Video
                 </button>
               </div>
@@ -1054,13 +1090,21 @@ const Videos = () => {
         </div>
         <div className="stat-card">
           <div className="stat-content">
-            <h3>{videos.filter((v) => v.accessLevel === "Free").length}</h3>
-            <p>Free Videos</p>
+            <h3>
+              {videos.filter((v) => v.accessLevel === "All Users").length}
+            </h3>
+            <p>All Users Videos</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-content">
-            <h3>{videos.filter((v) => v.accessLevel === "Paid").length}</h3>
+            <h3>{videos.filter((v) => v.accessLevel === "Freemium").length}</h3>
+            <p>Freemium Videos</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-content">
+            <h3>{videos.filter((v) => v.accessLevel === "Premium").length}</h3>
             <p>Premium Videos</p>
           </div>
         </div>
@@ -1146,6 +1190,7 @@ const Videos = () => {
 };
 
 export default Videos;
+
 // import React, { useState, useEffect } from "react";
 // import {
 //   RefreshCw,
@@ -1160,9 +1205,10 @@ export default Videos;
 // import { useAuth } from "../context/AuthContext";
 
 // const Videos = () => {
-//   const { API_BASE } = useAuth();
+//   const { API_BASE, token } = useAuth();
 //   const [videos, setVideos] = useState([]);
 //   const [filteredVideos, setFilteredVideos] = useState([]);
+//   const [categories, setCategories] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [showModal, setShowModal] = useState(false);
 //   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -1173,20 +1219,21 @@ export default Videos;
 //   const [accessFilter, setAccessFilter] = useState("");
 //   const [currentPage, setCurrentPage] = useState(1);
 //   const [videosPerPage] = useState(10);
-
-//   const [categories, setCategories] = useState([
-//     "Meditation",
-//     "Education",
-//     "Success Stories",
-//     "Fitness",
-//   ]);
+//   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+//   const [uploadProgress, setUploadProgress] = useState(0);
+//   const [isUploading, setIsUploading] = useState(false);
+//   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+//   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
 //   const accessLevels = ["Free", "Paid"];
-//   const [categoryForm, setCategoryForm] = useState({ name: "" });
+//   const [categoryForm, setCategoryForm] = useState({
+//     name: "",
+//     description: "",
+//   });
 
 //   const [formData, setFormData] = useState({
 //     title: "",
 //     description: "",
-//     category: "",
+//     categoryId: "",
 //     accessLevel: "Free",
 //     youtubeLink: "",
 //     videoFile: null,
@@ -1195,49 +1242,96 @@ export default Videos;
 
 //   useEffect(() => {
 //     loadVideos();
+//     loadCategories();
 //   }, []);
 
 //   useEffect(() => {
-//     // Filter videos based on search and filters
 //     let filtered = videos;
 
 //     if (searchTerm) {
 //       filtered = filtered.filter(
 //         (video) =>
 //           video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//           video.description?.toLowerCase().includes(searchTerm.toLowerCase()),
+//           video.description?.toLowerCase().includes(searchTerm.toLowerCase())
 //       );
 //     }
 
 //     if (categoryFilter) {
-//       filtered = filtered.filter((video) => video.category === categoryFilter);
+//       filtered = filtered.filter(
+//         (video) => video.category?.categoryId === categoryFilter
+//       );
 //     }
 
 //     if (accessFilter) {
 //       filtered = filtered.filter((video) => video.accessLevel === accessFilter);
 //     }
 
+//     // Apply sorting
+//     if (sortConfig.key) {
+//       filtered = [...filtered].sort((a, b) => {
+//         let aValue, bValue;
+//         if (sortConfig.key === "category") {
+//           aValue = a.category?.name || "";
+//           bValue = b.category?.name || "";
+//         } else if (sortConfig.key === "createdAt") {
+//           aValue = new Date(a.createdAt).getTime();
+//           bValue = new Date(b.createdAt).getTime();
+//         } else {
+//           aValue = a[sortConfig.key] || "";
+//           bValue = b[sortConfig.key] || "";
+//         }
+//         if (typeof aValue === "number") {
+//           return sortConfig.direction === "asc"
+//             ? aValue - bValue
+//             : bValue - aValue;
+//         }
+//         return sortConfig.direction === "asc"
+//           ? aValue.toString().localeCompare(bValue.toString())
+//           : bValue.toString().localeCompare(aValue.toString());
+//       });
+//     }
+
 //     setFilteredVideos(filtered);
 //     setCurrentPage(1);
-//   }, [videos, searchTerm, categoryFilter, accessFilter]);
+//   }, [videos, searchTerm, categoryFilter, accessFilter, sortConfig]);
 
 //   const loadVideos = async () => {
 //     try {
 //       setLoading(true);
-//       const response = await axios.get(`${API_BASE}/videos`);
+//       const response = await axios.get(`${API_BASE}/videos`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
 //       setVideos(response.data.videos || []);
 //       setFilteredVideos(response.data.videos || []);
 //     } catch (error) {
 //       console.error("Error loading videos:", error);
+//       alert(
+//         error.response?.data?.message ||
+//           "Failed to load videos. Please try again."
+//       );
 //     } finally {
 //       setLoading(false);
+//     }
+//   };
+
+//   const loadCategories = async () => {
+//     try {
+//       const response = await axios.get(`${API_BASE}/video-categories`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+//       setCategories(response.data.data || []);
+//     } catch (error) {
+//       console.error("Error loading categories:", error);
+//       alert(
+//         error.response?.data?.message ||
+//           "Failed to load categories. Please try again."
+//       );
 //     }
 //   };
 
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 
-//     // Validate that either video file or YouTube link is provided
 //     if (!formData.videoFile && !formData.youtubeLink) {
 //       alert("Please provide either a video file or YouTube link");
 //       return;
@@ -1245,15 +1339,11 @@ export default Videos;
 
 //     try {
 //       const formDataToSend = new FormData();
-
-//       // Add text fields
 //       formDataToSend.append("title", formData.title);
-//       formDataToSend.append("description", formData.description);
-//       formDataToSend.append("category", formData.category);
+//       formDataToSend.append("description", formData.description || "");
+//       formDataToSend.append("categoryId", formData.categoryId || "");
 //       formDataToSend.append("accessLevel", formData.accessLevel);
-//       formDataToSend.append("youtubeLink", formData.youtubeLink);
-
-//       // Add files if selected
+//       formDataToSend.append("youtubeLink", formData.youtubeLink || "");
 //       if (formData.videoFile) {
 //         formDataToSend.append("video", formData.videoFile);
 //       }
@@ -1261,14 +1351,35 @@ export default Videos;
 //         formDataToSend.append("thumbnail", formData.thumbnailFile);
 //       }
 
+//       // Log FormData for debugging
+//       for (let pair of formDataToSend.entries()) {
+//         console.log(`${pair[0]}: ${pair[1]}`);
+//       }
+
+//       setIsUploading(true);
+//       setUploadProgress(0);
+
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           "Content-Type": "multipart/form-data",
+//         },
+//         onUploadProgress: (progressEvent) => {
+//           const progress = Math.round(
+//             (progressEvent.loaded * 100) / progressEvent.total
+//           );
+//           setUploadProgress(progress);
+//         },
+//       };
+
 //       if (editingVideo) {
-//         // Update video (you'll need to implement this endpoint)
 //         await axios.put(
 //           `${API_BASE}/videos/${editingVideo._id}`,
 //           formDataToSend,
+//           config
 //         );
 //       } else {
-//         await axios.post(`${API_BASE}/videos`, formDataToSend);
+//         await axios.post(`${API_BASE}/videos`, formDataToSend, config);
 //       }
 
 //       setShowModal(false);
@@ -1276,7 +1387,7 @@ export default Videos;
 //       setFormData({
 //         title: "",
 //         description: "",
-//         category: "",
+//         categoryId: "",
 //         accessLevel: "Free",
 //         youtubeLink: "",
 //         videoFile: null,
@@ -1285,7 +1396,12 @@ export default Videos;
 //       loadVideos();
 //     } catch (error) {
 //       console.error("Error saving video:", error);
-//       alert("Error saving video. Please try again.");
+//       alert(
+//         error.response?.data?.message || "Error saving video. Please try again."
+//       );
+//     } finally {
+//       setIsUploading(false);
+//       setUploadProgress(0);
 //     }
 //   };
 
@@ -1294,7 +1410,7 @@ export default Videos;
 //     setFormData({
 //       title: video.title,
 //       description: video.description || "",
-//       category: video.category,
+//       categoryId: video.category?.categoryId || "",
 //       accessLevel: video.accessLevel,
 //       youtubeLink: video.youtubeLink || "",
 //       videoFile: null,
@@ -1306,44 +1422,79 @@ export default Videos;
 //   const handleDelete = async (videoId) => {
 //     if (window.confirm("Are you sure you want to delete this video?")) {
 //       try {
-//         await axios.delete(`${API_BASE}/videos/${videoId}`);
+//         await axios.delete(`${API_BASE}/videos/${videoId}`, {
+//           headers: { Authorization: `Bearer ${token}` },
+//         });
 //         loadVideos();
 //       } catch (error) {
 //         console.error("Error deleting video:", error);
-//         alert("Error deleting video. Please try again.");
+//         alert(
+//           error.response?.data?.message ||
+//             "Error deleting video. Please try again."
+//         );
 //       }
 //     }
 //   };
 
-//   // Category Management Functions
-//   const handleAddCategory = () => {
-//     if (categoryForm.name && !categories.includes(categoryForm.name)) {
-//       setCategories([...categories, categoryForm.name]);
-//       setCategoryForm({ name: "" });
-//       setShowCategoryModal(false);
-//     }
-//   };
+//   const handleCategorySubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const payload = {
+//         name: categoryForm.name,
+//         description: categoryForm.description || "",
+//       };
 
-//   const handleEditCategory = (oldCategory) => {
-//     if (categoryForm.name && !categories.includes(categoryForm.name)) {
-//       const updatedCategories = categories.map((cat) =>
-//         cat === oldCategory ? categoryForm.name : cat,
-//       );
-//       setCategories(updatedCategories);
-//       setCategoryForm({ name: "" });
+//       if (editingCategory) {
+//         await axios.put(
+//           `${API_BASE}/video-categories/update/${editingCategory.categoryId}`,
+//           payload,
+//           { headers: { Authorization: `Bearer ${token}` } }
+//         );
+//       } else {
+//         await axios.post(`${API_BASE}/video-categories/add`, payload, {
+//           headers: { Authorization: `Bearer ${token}` },
+//         });
+//       }
+
+//       setShowCategoryModal(false);
 //       setEditingCategory(null);
-//       setShowCategoryModal(false);
+//       setCategoryForm({ name: "", description: "" });
+//       loadCategories();
+//     } catch (error) {
+//       console.error("Error saving category:", error);
+//       alert(
+//         error.response?.data?.message ||
+//           "Error saving category. Please try again."
+//       );
 //     }
 //   };
 
-//   const handleDeleteCategory = (categoryToDelete) => {
-//     if (
-//       window.confirm(
-//         `Are you sure you want to delete the category "${categoryToDelete}"?`,
-//       )
-//     ) {
-//       setCategories(categories.filter((cat) => cat !== categoryToDelete));
+//   const handleDeleteCategory = async (categoryId) => {
+//     if (window.confirm(`Are you sure you want to delete this category?`)) {
+//       try {
+//         await axios.delete(
+//           `${API_BASE}/video-categories/delete/${categoryId}`,
+//           {
+//             headers: { Authorization: `Bearer ${token}` },
+//           }
+//         );
+//         loadCategories();
+//       } catch (error) {
+//         console.error("Error deleting category:", error);
+//         alert(
+//           error.response?.data?.message ||
+//             "Error deleting category. Please try again."
+//         );
+//       }
 //     }
+//   };
+
+//   const handleSort = (key) => {
+//     let direction = "asc";
+//     if (sortConfig.key === key && sortConfig.direction === "asc") {
+//       direction = "desc";
+//     }
+//     setSortConfig({ key, direction });
 //   };
 
 //   const formatDate = (dateString) => {
@@ -1355,7 +1506,7 @@ export default Videos;
 //   const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
 //   const currentVideos = filteredVideos.slice(
 //     indexOfFirstVideo,
-//     indexOfLastVideo,
+//     indexOfLastVideo
 //   );
 //   const totalPages = Math.ceil(filteredVideos.length / videosPerPage);
 
@@ -1375,7 +1526,7 @@ export default Videos;
 //               setFormData({
 //                 title: "",
 //                 description: "",
-//                 category: "",
+//                 categoryId: "",
 //                 accessLevel: "Free",
 //                 youtubeLink: "",
 //                 videoFile: null,
@@ -1391,7 +1542,7 @@ export default Videos;
 //             className="btn btn-secondary"
 //             onClick={() => {
 //               setEditingCategory(null);
-//               setCategoryForm({ name: "" });
+//               setCategoryForm({ name: "", description: "" });
 //               setShowCategoryModal(true);
 //             }}
 //           >
@@ -1449,12 +1600,13 @@ export default Videos;
 //             border: "1px solid var(--border-color)",
 //             borderRadius: "6px",
 //             color: "var(--text-white)",
+//             minWidth: "150px",
 //           }}
 //         >
 //           <option value="">All Categories</option>
 //           {categories.map((category) => (
-//             <option key={category} value={category}>
-//               {category}
+//             <option key={category.categoryId} value={category.categoryId}>
+//               {category.name}
 //             </option>
 //           ))}
 //         </select>
@@ -1468,6 +1620,7 @@ export default Videos;
 //             border: "1px solid var(--border-color)",
 //             borderRadius: "6px",
 //             color: "var(--text-white)",
+//             minWidth: "150px",
 //           }}
 //         >
 //           <option value="">All Access Levels</option>
@@ -1519,7 +1672,9 @@ export default Videos;
 //               )}
 //               <div style={{ position: "absolute", top: "10px", right: "10px" }}>
 //                 <span
-//                   className={`flag-badge flag-${video.accessLevel === "Free" ? "green" : "yellow"}`}
+//                   className={`flag-badge flag-${
+//                     video.accessLevel === "Free" ? "green" : "yellow"
+//                   }`}
 //                 >
 //                   {video.accessLevel}
 //                 </span>
@@ -1531,9 +1686,13 @@ export default Videos;
 //                 color: "var(--primary-gold)",
 //                 marginBottom: "8px",
 //                 fontSize: "1.1rem",
+//                 cursor: "pointer",
 //               }}
+//               onClick={() => handleSort("title")}
 //             >
-//               {video.title}
+//               {video.title}{" "}
+//               {sortConfig.key === "title" &&
+//                 (sortConfig.direction === "asc" ? "↑" : "↓")}
 //             </h3>
 
 //             <p
@@ -1549,12 +1708,24 @@ export default Videos;
 //             <div style={{ marginBottom: "15px" }}>
 //               <span
 //                 className="flag-badge flag-green"
-//                 style={{ marginRight: "8px" }}
+//                 style={{ marginRight: "8px", cursor: "pointer" }}
+//                 onClick={() => handleSort("category")}
 //               >
-//                 {video.category}
+//                 {video.category?.name || "No Category"}{" "}
+//                 {sortConfig.key === "category" &&
+//                   (sortConfig.direction === "asc" ? "↑" : "↓")}
 //               </span>
-//               <span style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}>
-//                 {formatDate(video.createdAt)}
+//               <span
+//                 style={{
+//                   color: "var(--text-gray)",
+//                   fontSize: "0.8rem",
+//                   cursor: "pointer",
+//                 }}
+//                 onClick={() => handleSort("createdAt")}
+//               >
+//                 {formatDate(video.createdAt)}{" "}
+//                 {sortConfig.key === "createdAt" &&
+//                   (sortConfig.direction === "asc" ? "↑" : "↓")}
 //               </span>
 //             </div>
 
@@ -1582,9 +1753,26 @@ export default Videos;
 //                     display: "inline-flex",
 //                     alignItems: "center",
 //                   }}
+//                   title="Play on YouTube"
 //                 >
 //                   <Play size={14} />
 //                 </a>
+//               )}
+//               {video.videoUrl && (
+//                 <button
+//                   onClick={() => {
+//                     setCurrentVideoUrl(video.videoUrl);
+//                     setShowVideoPlayer(true);
+//                   }}
+//                   className="action-btn btn-view"
+//                   style={{
+//                     display: "inline-flex",
+//                     alignItems: "center",
+//                   }}
+//                   title="Play uploaded video"
+//                 >
+//                   <Play size={14} />
+//                 </button>
 //               )}
 //             </div>
 //           </div>
@@ -1605,7 +1793,9 @@ export default Videos;
 //             <button
 //               key={i + 1}
 //               onClick={() => setCurrentPage(i + 1)}
-//               className={`btn ${currentPage === i + 1 ? "btn-primary" : "btn-secondary"}`}
+//               className={`btn ${
+//                 currentPage === i + 1 ? "btn-primary" : "btn-secondary"
+//               }`}
 //               style={{ minWidth: "40px" }}
 //             >
 //               {i + 1}
@@ -1614,7 +1804,7 @@ export default Videos;
 //         </div>
 //       )}
 
-//       {/* Add/Edit Modal */}
+//       {/* Add/Edit Video Modal */}
 //       {showModal && (
 //         <div
 //           style={{
@@ -1688,9 +1878,9 @@ export default Videos;
 //               <div className="form-group">
 //                 <label>Category *</label>
 //                 <select
-//                   value={formData.category}
+//                   value={formData.categoryId}
 //                   onChange={(e) =>
-//                     setFormData({ ...formData, category: e.target.value })
+//                     setFormData({ ...formData, categoryId: e.target.value })
 //                   }
 //                   required
 //                   style={{
@@ -1704,8 +1894,11 @@ export default Videos;
 //                 >
 //                   <option value="">Select Category</option>
 //                   {categories.map((category) => (
-//                     <option key={category} value={category}>
-//                       {category}
+//                     <option
+//                       key={category.categoryId}
+//                       value={category.categoryId}
+//                     >
+//                       {category.name}
 //                     </option>
 //                   ))}
 //                 </select>
@@ -1753,6 +1946,11 @@ export default Videos;
 //                     color: "var(--text-white)",
 //                   }}
 //                 />
+//                 <small
+//                   style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
+//                 >
+//                   Optional - Provide a YouTube link or upload a video file below
+//                 </small>
 //               </div>
 
 //               <div className="form-group">
@@ -1775,7 +1973,7 @@ export default Videos;
 //                 <small
 //                   style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
 //                 >
-//                   Optional - Upload video file or provide YouTube link above
+//                   Optional - Upload video file (max 100MB, mp4, webm)
 //                 </small>
 //               </div>
 
@@ -1802,10 +2000,37 @@ export default Videos;
 //                 <small
 //                   style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
 //                 >
-//                   Optional - Upload a thumbnail image for the video
+//                   Optional - Upload a thumbnail image (jpg, png, max 5MB)
 //                 </small>
 //               </div>
 
+//               {isUploading && (
+//                 <div style={{ marginBottom: "20px" }}>
+//                   <div
+//                     style={{ marginBottom: "8px", color: "var(--text-gray)" }}
+//                   >
+//                     Upload Progress: {uploadProgress}%
+//                   </div>
+//                   <div
+//                     style={{
+//                       width: "100%",
+//                       height: "8px",
+//                       backgroundColor: "var(--bg-secondary)",
+//                       borderRadius: "4px",
+//                       overflow: "hidden",
+//                     }}
+//                   >
+//                     <div
+//                       style={{
+//                         width: `${uploadProgress}%`,
+//                         height: "100%",
+//                         backgroundColor: "var(--primary-color)",
+//                         transition: "width 0.3s ease",
+//                       }}
+//                     />
+//                   </div>
+//                 </div>
+//               )}
 //               <div
 //                 style={{
 //                   display: "flex",
@@ -1818,11 +2043,21 @@ export default Videos;
 //                   type="button"
 //                   onClick={() => setShowModal(false)}
 //                   className="btn btn-secondary"
+//                   disabled={isUploading}
 //                 >
 //                   Cancel
 //                 </button>
-//                 <button type="submit" className="btn btn-primary">
-//                   {editingVideo ? "Update" : "Create"} Video
+//                 <button
+//                   type="submit"
+//                   className="btn btn-primary"
+//                   disabled={isUploading}
+//                 >
+//                   {isUploading
+//                     ? "Uploading..."
+//                     : editingVideo
+//                     ? "Update"
+//                     : "Create"}{" "}
+//                   Video
 //                 </button>
 //               </div>
 //             </form>
@@ -1868,33 +2103,51 @@ export default Videos;
 //                 <label>
 //                   {editingCategory ? "Edit Category" : "Add New Category"}
 //                 </label>
-//                 <div style={{ display: "flex", gap: "10px" }}>
-//                   <input
-//                     type="text"
-//                     value={categoryForm.name}
-//                     onChange={(e) => setCategoryForm({ name: e.target.value })}
-//                     placeholder="Category name"
-//                     style={{
-//                       flex: 1,
-//                       padding: "12px",
-//                       background: "var(--input-bg)",
-//                       border: "1px solid var(--border-color)",
-//                       borderRadius: "8px",
-//                       color: "var(--text-white)",
-//                     }}
-//                   />
-//                   <button
-//                     onClick={() =>
-//                       editingCategory
-//                         ? handleEditCategory(editingCategory)
-//                         : handleAddCategory()
-//                     }
-//                     className="btn btn-primary"
-//                     disabled={!categoryForm.name.trim()}
-//                   >
-//                     {editingCategory ? "Update" : "Add"}
-//                   </button>
-//                 </div>
+//                 <input
+//                   type="text"
+//                   value={categoryForm.name}
+//                   onChange={(e) =>
+//                     setCategoryForm({ ...categoryForm, name: e.target.value })
+//                   }
+//                   placeholder="Category name"
+//                   required
+//                   style={{
+//                     width: "100%",
+//                     padding: "12px",
+//                     background: "var(--input-bg)",
+//                     border: "1px solid var(--border-color)",
+//                     borderRadius: "8px",
+//                     color: "var(--text-white)",
+//                     marginBottom: "10px",
+//                   }}
+//                 />
+//                 <input
+//                   type="text"
+//                   value={categoryForm.description}
+//                   onChange={(e) =>
+//                     setCategoryForm({
+//                       ...categoryForm,
+//                       description: e.target.value,
+//                     })
+//                   }
+//                   placeholder="Category description (optional)"
+//                   style={{
+//                     width: "100%",
+//                     padding: "12px",
+//                     background: "var(--input-bg)",
+//                     border: "1px solid var(--border-color)",
+//                     borderRadius: "8px",
+//                     color: "var(--text-white)",
+//                   }}
+//                 />
+//                 <button
+//                   onClick={handleCategorySubmit}
+//                   className="btn btn-primary"
+//                   disabled={!categoryForm.name.trim()}
+//                   style={{ marginTop: "10px" }}
+//                 >
+//                   {editingCategory ? "Update" : "Add"}
+//                 </button>
 //               </div>
 //             </div>
 
@@ -1904,9 +2157,9 @@ export default Videos;
 //                 Existing Categories
 //               </h3>
 //               <div style={{ maxHeight: "200px", overflowY: "auto" }}>
-//                 {categories.map((category, index) => (
+//                 {categories.map((category) => (
 //                   <div
-//                     key={index}
+//                     key={category.categoryId}
 //                     style={{
 //                       display: "flex",
 //                       justifyContent: "space-between",
@@ -1918,14 +2171,28 @@ export default Videos;
 //                       marginBottom: "8px",
 //                     }}
 //                   >
-//                     <span style={{ color: "var(--text-white)" }}>
-//                       {category}
-//                     </span>
+//                     <div>
+//                       <span style={{ color: "var(--text-white)" }}>
+//                         {category.name}
+//                       </span>
+//                       <p
+//                         style={{
+//                           color: "var(--text-gray)",
+//                           fontSize: "0.8rem",
+//                           margin: "5px 0 0 0",
+//                         }}
+//                       >
+//                         {category.description || "No description"}
+//                       </p>
+//                     </div>
 //                     <div style={{ display: "flex", gap: "5px" }}>
 //                       <button
 //                         onClick={() => {
 //                           setEditingCategory(category);
-//                           setCategoryForm({ name: category });
+//                           setCategoryForm({
+//                             name: category.name,
+//                             description: category.description || "",
+//                           });
 //                         }}
 //                         className="action-btn btn-edit"
 //                         style={{ fontSize: "0.8rem", padding: "4px 8px" }}
@@ -1933,7 +2200,9 @@ export default Videos;
 //                         <Edit size={12} />
 //                       </button>
 //                       <button
-//                         onClick={() => handleDeleteCategory(category)}
+//                         onClick={() =>
+//                           handleDeleteCategory(category.categoryId)
+//                         }
 //                         className="action-btn btn-delete"
 //                         style={{ fontSize: "0.8rem", padding: "4px 8px" }}
 //                       >
@@ -1956,7 +2225,7 @@ export default Videos;
 //                 onClick={() => {
 //                   setShowCategoryModal(false);
 //                   setEditingCategory(null);
-//                   setCategoryForm({ name: "" });
+//                   setCategoryForm({ name: "", description: "" });
 //                 }}
 //                 className="btn btn-secondary"
 //               >
@@ -1994,6 +2263,76 @@ export default Videos;
 //           </div>
 //         </div>
 //       </div>
+
+//       {/* Video Player Modal */}
+//       {showVideoPlayer && (
+//         <div
+//           style={{
+//             position: "fixed",
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             background: "rgba(0, 0, 0, 0.9)",
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "center",
+//             zIndex: 1000,
+//           }}
+//           onClick={() => setShowVideoPlayer(false)}
+//         >
+//           <div
+//             style={{
+//               width: "90%",
+//               maxWidth: "800px",
+//               maxHeight: "90%",
+//               backgroundColor: "#000",
+//               borderRadius: "8px",
+//               overflow: "hidden",
+//             }}
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             <div
+//               style={{
+//                 padding: "10px",
+//                 backgroundColor: "var(--card-bg)",
+//                 display: "flex",
+//                 justifyContent: "space-between",
+//                 alignItems: "center",
+//               }}
+//             >
+//               <h3 style={{ color: "var(--text-white)", margin: 0 }}>
+//                 Video Player
+//               </h3>
+//               <button
+//                 onClick={() => setShowVideoPlayer(false)}
+//                 style={{
+//                   background: "none",
+//                   border: "none",
+//                   color: "var(--text-white)",
+//                   fontSize: "20px",
+//                   cursor: "pointer",
+//                 }}
+//               >
+//                 ×
+//               </button>
+//             </div>
+//             <video
+//               src={currentVideoUrl}
+//               controls
+//               autoPlay
+//               style={{
+//                 width: "100%",
+//                 height: "auto",
+//                 maxHeight: "70vh",
+//                 display: "block",
+//               }}
+//             >
+//               Your browser does not support the video tag.
+//             </video>
+//           </div>
+//         </div>
+//       )}
 //     </div>
 //   );
 // };

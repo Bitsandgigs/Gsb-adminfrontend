@@ -5,6 +5,7 @@ import {
   TrendingUp,
   ShoppingCart,
   DollarSign,
+  Search,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -12,34 +13,68 @@ import { useAuth } from "../context/AuthContext";
 const Orders = () => {
   const { API_BASE } = useAuth();
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     loadOrders();
   }, []);
 
+  useEffect(() => {
+    // Filter orders by status and search term
+    let filtered = orders;
+
+    // Apply status filter
+    if (statusFilter) {
+      filtered = filtered.filter((order) => order.status === statusFilter);
+    }
+
+    // Apply search filter (name, email, orderId)
+    if (searchTerm) {
+      filtered = filtered.filter((order) => {
+        const nameMatch = order.contactInfo?.name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        const emailMatch = order.userId?.email
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        const orderIdMatch = order._id
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        return nameMatch || emailMatch || orderIdMatch;
+      });
+    }
+
+    console.log("Filtered Orders:", filtered); // Debug: Log filtered orders
+    setFilteredOrders(filtered);
+  }, [orders, statusFilter, searchTerm]);
+
   const loadOrders = async () => {
     try {
       setLoading(true);
+      console.log("Fetching orders from:", `${API_BASE}/orders`); // Debug: Log API URL
       const response = await axios.get(`${API_BASE}/orders`);
-      setOrders(response.data.orders || []);
+      console.log("Raw response:", response.data); // Debug: Log full response
+      const ordersData = response.data.orders || [];
+      console.log("Parsed orders:", ordersData); // Debug: Log parsed orders
+      setOrders(ordersData);
+      setFilteredOrders(ordersData);
     } catch (error) {
       console.error("Error loading orders:", error);
+      setOrders([]);
+      setFilteredOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredOrders = statusFilter
-    ? orders.filter((order) => order.status === statusFilter)
-    : orders;
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
-    }).format(amount);
+    }).format(amount || 0);
   };
 
   const formatDate = (dateString) => {
@@ -49,28 +84,31 @@ const Orders = () => {
   };
 
   // Calculate statistics
-  const totalOrders = orders.length;
-  const totalRevenue = orders.reduce(
+  const totalOrders = filteredOrders.length;
+  const totalRevenue = filteredOrders.reduce(
     (sum, order) => sum + (order.total || 0),
-    0,
+    0
   );
-  const pendingOrders = orders.filter(
-    (order) => order.status === "pending",
+  const pendingOrders = filteredOrders.filter(
+    (order) => order.status === "pending"
   ).length;
-  const completedOrders = orders.filter(
-    (order) => order.status === "delivered",
+  const completedOrders = filteredOrders.filter(
+    (order) => order.status === "delivered"
   ).length;
-  const avgOrderValue = orders.length ? totalRevenue / orders.length : 0;
+  const avgOrderValue = filteredOrders.length
+    ? totalRevenue / filteredOrders.length
+    : 0;
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
+      console.log(`Updating order ${orderId} to status: ${newStatus}`); // Debug: Log status update
       await axios.put(`${API_BASE}/orders/${orderId}/status`, {
         status: newStatus,
       });
       loadOrders(); // Reload orders to show updated status
     } catch (error) {
       console.error("Error updating order status:", error);
-      alert("Failed to update order status");
+      alert(error.response?.data?.error || "Failed to update order status");
     }
   };
 
@@ -95,16 +133,56 @@ const Orders = () => {
     <div className="page-container">
       <div className="page-header">
         <h1 className="page-title-main">Orders Management</h1>
-        <div className="filter-controls">
-          <select
+        <div
+          className="filter-controls"
+          style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}
+        >
+          <div
+            className="search-box"
+            style={{ position: "relative", flex: "1", minWidth: "200px" }}
+          >
+            <Search
+              size={16}
+              style={{
+                position: "absolute",
+                left: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "var(--text-gray)",
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Search by name, email, or order ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 8px 8px 35px",
+                background: "var(--input-bg)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "6px",
+                color: "var(--text-white)",
+              }}
+            />
+          </div>
+          {/* <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
+            style={{
+              padding: "8px",
+              background: "var(--input-bg)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "6px",
+              color: "var(--text-white)",
+              minWidth: "150px",
+            }}
           >
             <option value="">All Status</option>
             <option value="pending">Pending</option>
             <option value="shipped">Shipped</option>
             <option value="delivered">Delivered</option>
-          </select>
+          </select> */}
           <button className="btn btn-primary" onClick={loadOrders}>
             <RefreshCw size={16} />
             Refresh
@@ -118,7 +196,7 @@ const Orders = () => {
             <ShoppingCart />
           </div>
           <div className="stat-content">
-            <h3>{orders.length}</h3>
+            <h3>{totalOrders}</h3>
             <p>Total Orders</p>
           </div>
         </div>
@@ -127,7 +205,7 @@ const Orders = () => {
             <Package />
           </div>
           <div className="stat-content">
-            <h3>{orders.filter((o) => o.status === "pending").length}</h3>
+            <h3>{pendingOrders}</h3>
             <p>Pending Orders</p>
           </div>
         </div>
@@ -161,7 +239,7 @@ const Orders = () => {
               <th>Items</th>
               <th>Total</th>
               <th>Payment Method</th>
-              <th>Status</th>
+              {/* <th>Status</th> */}
               <th>Date</th>
             </tr>
           </thead>
@@ -176,16 +254,20 @@ const Orders = () => {
               filteredOrders.map((order) => (
                 <tr key={order._id}>
                   <td style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>
-                    {order._id.slice(-8)}
+                    {order._id?.slice(-8) || "N/A"}
                   </td>
                   <td>
-                    <strong>{order.userId?.fullName || "Unknown"}</strong>
+                    <strong>{order.contactInfo?.name || "Unknown"}</strong>
                     <br />
-                    <span className="email-text">{order.userId?.email}</span>
+                    <span className="email-text">
+                      {order.userId?.email || "N/A"}
+                    </span>
                   </td>
                   <td>
-                    <div>{order.contactInfo?.name}</div>
-                    <div className="phone-text">{order.contactInfo?.phone}</div>
+                    <div>{order.contactInfo?.name || "Unknown"}</div>
+                    <div className="phone-text">
+                      {order.contactInfo?.phone || "N/A"}
+                    </div>
                   </td>
                   <td>
                     <div className="items-list">
@@ -193,7 +275,7 @@ const Orders = () => {
                       {order.items && order.items.length > 0 && (
                         <div style={{ fontSize: "0.8rem", color: "#999" }}>
                           {order.items.slice(0, 2).map((item, index) => (
-                            <div key={index}>{item.name}</div>
+                            <div key={index}>{item.name || "Unnamed item"}</div>
                           ))}
                           {order.items.length > 2 && (
                             <div>...and {order.items.length - 2} more</div>
@@ -205,8 +287,8 @@ const Orders = () => {
                   <td>
                     <strong>{formatCurrency(order.total)}</strong>
                   </td>
-                  <td>{order.paymentMethod}</td>
-                  <td>
+                  <td>{order.paymentMethod || "N/A"}</td>
+                  {/* <td>
                     <select
                       value={order.status || "pending"}
                       onChange={(e) =>
@@ -226,7 +308,7 @@ const Orders = () => {
                       <option value="delivered">DELIVERED</option>
                       <option value="cancelled">CANCELLED</option>
                     </select>
-                  </td>
+                  </td> */}
                   <td>{formatDate(order.createdAt)}</td>
                 </tr>
               ))

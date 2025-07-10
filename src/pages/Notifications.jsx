@@ -162,7 +162,51 @@ const Notifications = () => {
           />
         </div>
       </div>
-
+      {/* Notification Stats */}
+      <div className="stats-grid" style={{ marginTop: "30px" }}>
+        <div className="stat-card">
+          <div className="stat-icon">
+            <Bell />
+          </div>
+          <div className="stat-content">
+            <h3>{notifications.length}</h3>
+            <p>Total Notifications</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-content">
+            <h3>
+              {notifications.filter((n) => n.recipients === "All Users").length}
+            </h3>
+            <p>All Users</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-content">
+            <h3>
+              {
+                notifications.filter((n) => n.recipients === "Premium Users")
+                  .length
+              }
+            </h3>
+            <p>Premium Users</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-content">
+            <h3>
+              {
+                notifications.filter(
+                  (n) =>
+                    new Date(n.sentAt).toDateString() ===
+                    new Date().toDateString()
+                ).length
+              }
+            </h3>
+            <p>Today</p>
+          </div>
+        </div>
+      </div>
       {/* Notifications List */}
       <div style={{ display: "grid", gap: "15px", marginBottom: "30px" }}>
         {currentNotifications.map((notification) => (
@@ -401,7 +445,6 @@ const Notifications = () => {
                   <option value="All Users">All Users</option>
                   <option value="Fremium Users">Fremium Users</option>
                   <option value="Premium Users">Premium Users</option>
-                  <option value="Free Users">Free Users</option>
                 </select>
               </div>
 
@@ -481,52 +524,6 @@ const Notifications = () => {
           </div>
         </div>
       )}
-
-      {/* Notification Stats */}
-      <div className="stats-grid" style={{ marginTop: "30px" }}>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <Bell />
-          </div>
-          <div className="stat-content">
-            <h3>{notifications.length}</h3>
-            <p>Total Notifications</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-content">
-            <h3>
-              {notifications.filter((n) => n.recipients === "All Users").length}
-            </h3>
-            <p>All Users</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-content">
-            <h3>
-              {
-                notifications.filter((n) => n.recipients === "Premium Users")
-                  .length
-              }
-            </h3>
-            <p>Premium Users</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-content">
-            <h3>
-              {
-                notifications.filter(
-                  (n) =>
-                    new Date(n.sentAt).toDateString() ===
-                    new Date().toDateString()
-                ).length
-              }
-            </h3>
-            <p>Today</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

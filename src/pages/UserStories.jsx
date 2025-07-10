@@ -38,7 +38,7 @@ const UserStories = () => {
   const cleanupDemoData = async () => {
     if (
       window.confirm(
-        "Are you sure you want to remove all demo stories with broken images? This action cannot be undone.",
+        "Are you sure you want to remove all demo stories with broken images? This action cannot be undone."
       )
     ) {
       try {
@@ -74,9 +74,6 @@ const UserStories = () => {
       <div className="page-header">
         <h1 className="page-title-main">User Stories Management</h1>
         <div className="filter-controls">
-          <button className="btn btn-secondary" onClick={cleanupDemoData}>
-            🧹 Clean Demo Data
-          </button>
           <button className="btn btn-primary" onClick={loadStories}>
             <RefreshCw size={16} />
             Refresh
@@ -101,29 +98,6 @@ const UserStories = () => {
           <div className="stat-content">
             <h3>{getStatsForMonth()}</h3>
             <p>This Month</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <Image />
-          </div>
-          <div className="stat-content">
-            <h3>
-              {
-                stories.filter((s) => s.beforeImageUrl && s.afterImageUrl)
-                  .length
-              }
-            </h3>
-            <p>Complete Stories</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <User />
-          </div>
-          <div className="stat-content">
-            <h3>{new Set(stories.map((s) => s.user?._id)).size}</h3>
-            <p>Unique Users</p>
           </div>
         </div>
       </div>
@@ -166,7 +140,7 @@ const UserStories = () => {
                       onError={(e) => {
                         console.error(
                           "Failed to load before image:",
-                          story.beforeImageUrl,
+                          story.beforeImageUrl
                         );
                         e.target.style.display = "none";
                         e.target.nextSibling.style.display = "block";
@@ -193,7 +167,7 @@ const UserStories = () => {
                       onError={(e) => {
                         console.error(
                           "Failed to load after image:",
-                          story.afterImageUrl,
+                          story.afterImageUrl
                         );
                         e.target.style.display = "none";
                         e.target.nextSibling.style.display = "block";

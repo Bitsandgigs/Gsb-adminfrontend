@@ -19,7 +19,7 @@ ChartJS.register(
   Legend,
   CategoryScale,
   LinearScale,
-  BarElement,
+  BarElement
 );
 
 const Dashboard = () => {
@@ -55,7 +55,7 @@ const Dashboard = () => {
       const users = response.data.users || [];
 
       const greenFlagUsers = users.filter(
-        (user) => user.flag === "green",
+        (user) => user.flag === "green"
       ).length;
 
       setStats((prev) => ({
@@ -147,7 +147,9 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error creating test payment data:", error);
       alert(
-        `Failed to create test data: ${error.response?.data?.message || error.message}`,
+        `Failed to create test data: ${
+          error.response?.data?.message || error.message
+        }`
       );
     }
   };
@@ -221,9 +223,6 @@ const Dashboard = () => {
       <div className="page-header">
         <h1 className="page-title-main">Dashboard Overview</h1>
         <div style={{ display: "flex", gap: "10px" }}>
-          <button className="btn btn-secondary" onClick={createTestPaymentData}>
-            Add Test Data
-          </button>
           <button className="btn btn-primary" onClick={loadDashboardData}>
             Refresh Data
           </button>
