@@ -36,7 +36,7 @@ const ChatInterface = ({ chatId, onBack }) => {
     try {
       setLoading(true);
       const response = await axios.get(`${API_BASE}/chat/${chatId}`);
-      setChat(response.data);
+      setChat(response.data.data);
     } catch (error) {
       console.error("Error loading chat:", error);
     } finally {
@@ -146,7 +146,9 @@ const ChatInterface = ({ chatId, onBack }) => {
 
           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
             <span
-              className={`flag-badge flag-${chat.status === "open" ? "yellow" : "green"}`}
+              className={`flag-badge flag-${
+                chat.status === "open" ? "yellow" : "green"
+              }`}
             >
               {chat.status.toUpperCase()}
             </span>
