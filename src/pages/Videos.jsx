@@ -31,7 +31,7 @@ const Videos = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
-  const accessLevels = ["All Users", "Freemium", "Premium"];
+  const accessLevels = ["Free", "Paid", "All"];
   const [categoryForm, setCategoryForm] = useState({
     name: "",
     description: "",
@@ -41,7 +41,7 @@ const Videos = () => {
     title: "",
     description: "",
     categoryId: "",
-    accessLevel: "All Users",
+    accessLevel: "All",
     youtubeLink: "",
     videoFile: null,
     thumbnailFile: null,
@@ -157,7 +157,9 @@ const Videos = () => {
       if (formData.thumbnailFile) {
         formDataToSend.append("thumbnail", formData.thumbnailFile);
       }
-
+      formDataToSend.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
       setIsUploading(true);
       setUploadProgress(0);
 
@@ -190,7 +192,7 @@ const Videos = () => {
         title: "",
         description: "",
         categoryId: "",
-        accessLevel: "All Users",
+        accessLevel: "All",
         youtubeLink: "",
         videoFile: null,
         thumbnailFile: null,
@@ -329,7 +331,7 @@ const Videos = () => {
                 title: "",
                 description: "",
                 categoryId: "",
-                accessLevel: "All Users",
+                accessLevel: "All",
                 youtubeLink: "",
                 videoFile: null,
                 thumbnailFile: null,
@@ -340,7 +342,7 @@ const Videos = () => {
             <Plus size={16} />
             Add Video
           </button>
-          <button
+          {/* <button
             className="btn btn-secondary"
             onClick={() => {
               setEditingCategory(null);
@@ -350,7 +352,7 @@ const Videos = () => {
           >
             <Edit size={16} />
             Manage Categories
-          </button>
+          </button> */}
           <button className="btn btn-secondary" onClick={loadVideos}>
             <RefreshCw size={16} />
             Refresh
@@ -480,9 +482,9 @@ const Videos = () => {
               <div style={{ position: "absolute", top: "10px", right: "10px" }}>
                 <span
                   className={`flag-badge flag-${
-                    video.accessLevel === "All Users"
+                    video.accessLevel === "All"
                       ? "green"
-                      : video.accessLevel === "Freemium"
+                      : video.accessLevel === "Free"
                       ? "yellow"
                       : "red"
                   }`}
@@ -823,7 +825,7 @@ const Videos = () => {
                   <label>Thumbnail Image</label>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".jpg, .jpeg, .png"
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -839,6 +841,7 @@ const Videos = () => {
                       color: "var(--text-white)",
                     }}
                   />
+
                   <small
                     style={{ color: "var(--text-gray)", fontSize: "0.8rem" }}
                   >
@@ -1090,21 +1093,19 @@ const Videos = () => {
         </div>
         <div className="stat-card">
           <div className="stat-content">
-            <h3>
-              {videos.filter((v) => v.accessLevel === "All Users").length}
-            </h3>
+            <h3>{videos.filter((v) => v.accessLevel === "All").length}</h3>
             <p>All Users Videos</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-content">
-            <h3>{videos.filter((v) => v.accessLevel === "Freemium").length}</h3>
+            <h3>{videos.filter((v) => v.accessLevel === "Free").length}</h3>
             <p>Freemium Videos</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-content">
-            <h3>{videos.filter((v) => v.accessLevel === "Premium").length}</h3>
+            <h3>{videos.filter((v) => v.accessLevel === "Paid").length}</h3>
             <p>Premium Videos</p>
           </div>
         </div>

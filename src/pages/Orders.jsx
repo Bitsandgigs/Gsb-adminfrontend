@@ -87,13 +87,13 @@ const Orders = () => {
   const totalOrders = filteredOrders.length;
   const totalRevenue = filteredOrders.reduce(
     (sum, order) => sum + (order.total || 0),
-    0
+    0,
   );
   const pendingOrders = filteredOrders.filter(
-    (order) => order.status === "pending"
+    (order) => order.status === "pending",
   ).length;
   const completedOrders = filteredOrders.filter(
-    (order) => order.status === "delivered"
+    (order) => order.status === "delivered",
   ).length;
   const avgOrderValue = filteredOrders.length
     ? totalRevenue / filteredOrders.length
@@ -166,7 +166,7 @@ const Orders = () => {
               }}
             />
           </div>
-          {/* <select
+          <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             style={{
@@ -180,9 +180,12 @@ const Orders = () => {
           >
             <option value="">All Status</option>
             <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="processing">Processing</option>
             <option value="shipped">Shipped</option>
             <option value="delivered">Delivered</option>
-          </select> */}
+            <option value="cancelled">Cancelled</option>
+          </select>
           <button className="btn btn-primary" onClick={loadOrders}>
             <RefreshCw size={16} />
             Refresh
@@ -239,7 +242,7 @@ const Orders = () => {
               <th>Items</th>
               <th>Total</th>
               <th>Payment Method</th>
-              {/* <th>Status</th> */}
+              <th>Status</th>
               <th>Date</th>
             </tr>
           </thead>
@@ -288,7 +291,7 @@ const Orders = () => {
                     <strong>{formatCurrency(order.total)}</strong>
                   </td>
                   <td>{order.paymentMethod || "N/A"}</td>
-                  {/* <td>
+                  <td>
                     <select
                       value={order.status || "pending"}
                       onChange={(e) =>
@@ -304,11 +307,13 @@ const Orders = () => {
                       }}
                     >
                       <option value="pending">PENDING</option>
+                      <option value="confirmed">CONFIRMED</option>
+                      <option value="processing">PROCESSING</option>
                       <option value="shipped">SHIPPED</option>
                       <option value="delivered">DELIVERED</option>
                       <option value="cancelled">CANCELLED</option>
                     </select>
-                  </td> */}
+                  </td>
                   <td>{formatDate(order.createdAt)}</td>
                 </tr>
               ))
