@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
 
-  const API_BASE = "http://localhost:3000/api";
+  const API_BASE = "https://apis.gsbpathy.com/api";
 
   useEffect(() => {
     // Check if user is already logged in
