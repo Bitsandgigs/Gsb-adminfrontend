@@ -106,7 +106,7 @@ const Products = () => {
       }
 
       if (editingProduct) {
-        await axios.put(
+        await axios.patch(
           `${API_BASE}/products/${editingProduct._id}`,
           formDataToSend
         );

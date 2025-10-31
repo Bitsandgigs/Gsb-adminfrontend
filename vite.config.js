@@ -42,3 +42,5 @@ export default defineConfig({
     minify: "esbuild", // Ensure minification for optimized builds
   },
 });
+
+
